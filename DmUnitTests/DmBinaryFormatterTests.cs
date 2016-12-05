@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using Xunit;
 
@@ -29,8 +30,8 @@ namespace DmUnitTests
                         areEqual = EqualityHelpers.ArraysAreEqual((IEnumerable)obj, (IEnumerable)ob2);
                     else
                         areEqual = obj.Equals(ob2);
-                    
 
+                    Debug.WriteLine($"Type: {obj.GetType()}: Instance 1 is not equal to deserialized instance.");
 
                     Assert.True(areEqual, $"Type: {obj.GetType()}: Instance 1 is not equal to deserialized instance.");
                 }

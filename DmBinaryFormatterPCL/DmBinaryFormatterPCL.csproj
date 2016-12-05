@@ -1,0 +1,92 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <MinimumVisualStudioVersion>14.0</MinimumVisualStudioVersion>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{081A881A-5F12-4501-B5DE-5F29229A01EF}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>DmBinaryFormatterPCL</RootNamespace>
+    <AssemblyName>DmBinaryFormatterPCL</AssemblyName>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+    <TargetFrameworkVersion>v5.0</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="project.json" />
+    <!-- A reference to the entire .NET Framework is automatically included -->
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\DmBinaryFormatter\Converters\CultureInfoConverter.cs">
+      <Link>Converters\CultureInfoConverter.cs</Link>
+    </Compile>
+    <Compile Include="..\DmBinaryFormatter\Converters\ObjectConverter.cs">
+      <Link>Converters\ObjectConverter.cs</Link>
+    </Compile>
+    <Compile Include="..\DmBinaryFormatter\Converters\ObjectTypeConverter.cs">
+      <Link>Converters\ObjectTypeConverter.cs</Link>
+    </Compile>
+    <Compile Include="..\DmBinaryFormatter\Converters\VersionConverter.cs">
+      <Link>Converters\VersionConverter.cs</Link>
+    </Compile>
+    <Compile Include="..\DmBinaryFormatter\DmBinaryReader.cs">
+      <Link>DmBinaryReader.cs</Link>
+    </Compile>
+    <Compile Include="..\DmBinaryFormatter\DmBinaryWriter.cs">
+      <Link>DmBinaryWriter.cs</Link>
+    </Compile>
+    <Compile Include="..\DmBinaryFormatter\DmSerializer.cs">
+      <Link>DmSerializer.cs</Link>
+    </Compile>
+    <Compile Include="..\DmBinaryFormatter\DmUtils.cs">
+      <Link>DmUtils.cs</Link>
+    </Compile>
+    <Compile Include="..\DmBinaryFormatter\Serializers\ArraySerializer.cs">
+      <Link>Serializers\ArraySerializer.cs</Link>
+    </Compile>
+    <Compile Include="..\DmBinaryFormatter\Serializers\ConverterSerializer.cs">
+      <Link>Serializers\ConverterSerializer.cs</Link>
+    </Compile>
+    <Compile Include="..\DmBinaryFormatter\Serializers\CoreConverterSerializer.cs">
+      <Link>Serializers\CoreConverterSerializer.cs</Link>
+    </Compile>
+    <Compile Include="..\DmBinaryFormatter\Serializers\DictionarySerializer.cs">
+      <Link>Serializers\DictionarySerializer.cs</Link>
+    </Compile>
+    <Compile Include="..\DmBinaryFormatter\Serializers\ObjectSerializer.cs">
+      <Link>Serializers\ObjectSerializer.cs</Link>
+    </Compile>
+    <Compile Include="..\DmBinaryFormatter\Serializers\PrimitiveSerializer.cs">
+      <Link>Serializers\PrimitiveSerializer.cs</Link>
+    </Compile>
+    <Compile Include="..\DmBinaryFormatter\Serializers\SerializableSerializer.cs">
+      <Link>Serializers\SerializableSerializer.cs</Link>
+    </Compile>
+    <Compile Include="..\DmBinaryFormatter\Serializers\TypeSerializer.cs">
+      <Link>Serializers\TypeSerializer.cs</Link>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
+</Project>

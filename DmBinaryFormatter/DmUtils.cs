@@ -56,37 +56,38 @@ namespace DmBinaryFormatter
 
         }
 
-        public static bool CanRead(this MemberInfo member)
-        {
-            if (member.MemberType == MemberTypes.Field)
-            {
-                FieldInfo fi = (FieldInfo)member;
-                return fi.IsPublic;
-            }
-            else if (member.MemberType == MemberTypes.Property)
-            {
-                PropertyInfo pi = (PropertyInfo)member;
-                return pi.CanRead;
-            }
+        // .Net Standard 1.5 only
+        //public static bool CanRead(this MemberInfo member)
+        //{
+        //    if (member.MemberType == MemberTypes.Field)
+        //    {
+        //        FieldInfo fi = (FieldInfo)member;
+        //        return fi.IsPublic;
+        //    }
+        //    else if (member.MemberType == MemberTypes.Property)
+        //    {
+        //        PropertyInfo pi = (PropertyInfo)member;
+        //        return pi.CanRead;
+        //    }
 
-            return false;
-        }
+        //    return false;
+        //}
 
-        public static bool CanWrite(this MemberInfo member)
-        {
-            if (member.MemberType == MemberTypes.Field)
-            {
-                FieldInfo fi = (FieldInfo)member;
-                return (!fi.IsLiteral && !fi.IsInitOnly && fi.IsPublic);
-            }
-            else if (member.MemberType == MemberTypes.Property)
-            {
-                PropertyInfo pi = (PropertyInfo)member;
-                return pi.CanWrite;
-            }
+        //public static bool CanWrite(this MemberInfo member)
+        //{
+        //    if (member.MemberType == MemberTypes.Field)
+        //    {
+        //        FieldInfo fi = (FieldInfo)member;
+        //        return (!fi.IsLiteral && !fi.IsInitOnly && fi.IsPublic);
+        //    }
+        //    else if (member.MemberType == MemberTypes.Property)
+        //    {
+        //        PropertyInfo pi = (PropertyInfo)member;
+        //        return pi.CanWrite;
+        //    }
 
-            return false;
-        }
+        //    return false;
+        //}
 
         /// <summary>
         /// Get a member value
@@ -94,16 +95,25 @@ namespace DmBinaryFormatter
         public static object GetValue(this MemberInfo member, object obj)
         {
 
-            if (member.MemberType == MemberTypes.Field)
-            {
-                FieldInfo fi = (FieldInfo)member;
+            FieldInfo fi = member as FieldInfo;
+            if (fi != null)
                 return fi.GetValue(obj);
-            }
-            else if (member.MemberType == MemberTypes.Property)
-            {
-                PropertyInfo pi = (PropertyInfo)member;
+
+            PropertyInfo pi = member as PropertyInfo;
+            if (pi != null)
                 return pi.GetValue(obj);
-            }
+
+            // .net standard 1.6 only
+            //if (member.MemberType == MemberTypes.Field)
+            //{
+            //    FieldInfo fi = (FieldInfo)member;
+            //    return fi.GetValue(obj);
+            //}
+            //else if (member.MemberType == MemberTypes.Property)
+            //{
+            //    PropertyInfo pi = (PropertyInfo)member;
+            //    return pi.GetValue(obj);
+            //}
 
             return null;
 
@@ -112,20 +122,27 @@ namespace DmBinaryFormatter
         /// <summary>
         /// Set an object value
         /// </summary>
-        public static object SetValue(this MemberInfo member, object obj, object value)
+        public static void SetValue(this MemberInfo member, object obj, object value)
         {
-            if (member.MemberType == MemberTypes.Field)
-            {
-                FieldInfo fi = (FieldInfo)member;
-                fi.SetValue(obj, value);
-            }
-            else if (member.MemberType == MemberTypes.Property)
-            {
-                PropertyInfo pi = (PropertyInfo)member;
-                pi.SetValue(obj, value);
-            }
 
-            return null;
+            FieldInfo fi = member as FieldInfo;
+            if (fi != null)
+                fi.SetValue(obj, value);
+
+            PropertyInfo pi = member as PropertyInfo;
+            if (pi != null)
+                pi.SetValue(obj, value);
+
+            //if (member.MemberType == MemberTypes.Field)
+            //{
+            //    FieldInfo fi = (FieldInfo)member;
+            //    fi.SetValue(obj, value);
+            //}
+            //else if (member.MemberType == MemberTypes.Property)
+            //{
+            //    PropertyInfo pi = (PropertyInfo)member;
+            //    pi.SetValue(obj, value);
+            //}
 
         }
 
@@ -144,16 +161,28 @@ namespace DmBinaryFormatter
         /// </summary>
         public static Type GetMemberType(this MemberInfo member)
         {
-            if (member.MemberType == MemberTypes.Field)
-            {
-                FieldInfo fi = (FieldInfo)member;
+
+            //return member.GetType();
+
+            FieldInfo fi = member as FieldInfo;
+            if (fi != null)
                 return fi.FieldType;
-            }
-            else if (member.MemberType == MemberTypes.Property)
-            {
-                PropertyInfo pi = (PropertyInfo)member;
+
+            PropertyInfo pi = member as PropertyInfo;
+            if (pi != null)
                 return pi.PropertyType;
-            }
+
+
+            //if (member.MemberType == MemberTypes.Field)
+            //{
+            //    FieldInfo fi = (FieldInfo)member;
+            //    return fi.FieldType;
+            //}
+            //else if (member.MemberType == MemberTypes.Property)
+            //{
+            //    PropertyInfo pi = (PropertyInfo)member;
+            //    return pi.PropertyType;
+            //}
 
             return null;
 
@@ -273,7 +302,7 @@ namespace DmBinaryFormatter
             if (t.IsEnumerable())
                 return t;
 
-            var gga = objectTypeInfo.GetGenericArguments();
+            var gga = objectTypeInfo.GenericTypeArguments;  // GetGenericArguments();
             if (gga == null || gga.Length <= 0)
                 throw new ArgumentException("type not valid");
 

@@ -26,28 +26,34 @@ namespace DmBinaryFormatter
         private Dictionary<Object, int> fromObjects = new Dictionary<Object, int>();
         private Dictionary<int, Object> fromIndexes = new Dictionary<int, object>();
 
-        private (DmState, int) GetState(Object obj, Type objType)
+        private DmState GetState(Object obj, Type objType, ref int id)
         {
             if (obj == null)
             {
                 this.index++;
-                return (DmState.IsNull, this.index);
+                id = this.index;
+                return DmState.IsNull;
             }
 
             if (objType.IsPrimitiveManagedType())
             {
                 this.index++;
-                return (DmState.IsObject, this.index);
+                id = this.index;
+                return DmState.IsObject;
             }
 
             var ptrObj = fromObjects.ContainsKey(obj);
 
             if (ptrObj)
-                return (DmState.IsReference, fromObjects[obj]);
+            {
+                id = fromObjects[obj];
+                return DmState.IsReference;
+            }
 
             this.index++;
             fromObjects.Add(obj, this.index);
-            return (DmState.IsObject, this.index);
+            id = this.index;
+            return DmState.IsObject;
 
         }
         public DmSerializer()
@@ -114,7 +120,8 @@ namespace DmBinaryFormatter
             this.Writer.Write(objType.AssemblyQualifiedName);
 
             // Check if it's not a reference
-            (DmState state, int refIndex) = this.GetState(obj, objType);
+            int refIndex = 0;
+            DmState state = this.GetState(obj, objType, ref refIndex);
 
             // Write state
             this.Writer.Write((byte)state);
