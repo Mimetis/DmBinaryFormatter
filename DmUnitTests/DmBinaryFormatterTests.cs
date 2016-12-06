@@ -38,13 +38,18 @@ namespace DmUnitTests
             }
         }
 
+        /// <summary>
+        /// This class contains a IntPtr. DmSerializer can't serialize an IntPtr
+        /// </summary>
         public class ClassWithAConverter
         {
-
             public int ID { get; set; }
             public string LastName { get; set; }
             public IntPtr Ptr { get; set; }
 
+            /// <summary>
+            /// Just for the test equality
+            /// </summary>
             public override bool Equals(object obj)
             {
                 var objC = (ClassWithAConverter)obj;
@@ -56,8 +61,12 @@ namespace DmUnitTests
             {
                 return base.GetHashCode();
             }
-
         }
+
+        /// <summary>
+        /// This class inherits from the ObjectConverter abstract class.
+        /// You have to implement ConvertFromString and ConvertToString methods
+        /// </summary>
         public class ClassConverterForClassWithAConverter : DmBinaryFormatter.Converters.ObjectConverter
         {
             public override object ConvertFromString(string obj)

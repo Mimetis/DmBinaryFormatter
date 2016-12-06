@@ -68,6 +68,81 @@ And the serialization :
 
         Console.ReadLine();
 
+## Register a custom converter
+
+You can register a custom converter if your object is not compatible with the serializer, by default.
+
+Here is a straightfoward sample:
+
+        /// <summary>
+        /// This class contains a IntPtr. DmSerializer can't serialize an IntPtr
+        /// </summary>
+        public class ClassWithAConverter
+        {
+            public int ID { get; set; }
+            public string LastName { get; set; }
+            public IntPtr Ptr { get; set; }
+
+            /// <summary>
+            /// Just for the test equality
+            /// </summary>
+            public override bool Equals(object obj)
+            {
+                var objC = (ClassWithAConverter)obj;
+
+                return (this.ID == objC.ID && this.LastName == objC.LastName && this.Ptr.ToInt32() == objC.Ptr.ToInt32()); 
+            }
+
+            public override int GetHashCode()
+            {
+                return base.GetHashCode();
+            }
+        }
+
+Here is the Converter, inhereting from ObjectConverter :
+
+        /// <summary>
+        /// This class inherits from the ObjectConverter abstract class.
+        /// You have to implement ConvertFromString and ConvertToString methods
+        /// </summary>
+        public class ClassConverterForClassWithAConverter : DmBinaryFormatter.Converters.ObjectConverter
+        {
+            public override object ConvertFromString(string obj)
+            {
+                ClassWithAConverter cc = new ClassWithAConverter();
+
+                var array = obj.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+
+                cc.ID = int.Parse(array[0]);
+                cc.LastName = array[1].ToString();
+                cc.Ptr = new IntPtr(int.Parse(array[2]));
+
+                return cc;
+            }
+
+            public override string ConvertToString(object s)
+            {
+                ClassWithAConverter cc = s as ClassWithAConverter;
+                if (cc == null)
+                    throw new ArgumentException("Object is not of type ClassWithAConverter");
+
+                return $"{cc.ID},{cc.LastName},{cc.Ptr.ToInt32()}";
+            }
+        }
+
+And here is the test case :
+
+            ClassWithAConverter cc = new ClassWithAConverter();
+            cc.ID = 12;
+            cc.LastName = "Pertus";
+            cc.Ptr = new IntPtr(12222);
+
+            DmSerializer serializer = new DmSerializer();
+            serializer.RegisterConverter(typeof(ClassWithAConverter), new ClassConverterForClassWithAConverter());
+            var b = serializer.Serialize(cc);
+            var cc2 = serializer.Deserialize<ClassWithAConverter>(b);
+
+            Assert.Equal(cc, cc2);
 
 
 ## Knwon Issues
