@@ -1,7 +1,35 @@
 # DmBinaryFormatter
-A pretty little binary serializer working with .net standard 1.6
+A pretty little binary serializer working with **.NetStandard 1.6**
 
-Hopefully, we will have the real BinaryFormatter (from .netcore) in .net standard 2.0
+You will find a PCL version as well, targetting **.NetStandard 1.3** (and so compatible with **UWP**)
+
+*Hopefully, we will have the real BinaryFormatter (from .netcore) in **.NetStandard 2.0**
+But actually, for now, you can use this version :)*
+
+## Contributing
+
+If you want to contribute, be sure to open the solution with **Visual Studio 2017** since this project use the (old) new .csproj project system 
+
+## TL;DR;
+
+    // ----------------------------------------------------------------------------
+    // On .NET 4.6.2, using the PCL version targeting .Net Standard 1.3 
+    // On .NET Core, using the .NetCore version targeting .Net Standard 1.6 
+    // ----------------------------------------------------------------------------
+    DmSerializer serializer = new DmSerializer();
+
+    using (FileStream fs = new FileStream("client.bin", FileMode.OpenOrCreate, FileAccess.ReadWrite))
+    {
+        serializer.Serialize(cli, fs);
+    }
+
+    using (FileStream fs = new FileStream("client.bin", FileMode.Open, FileAccess.ReadWrite))
+    {
+        deserializedClient = serializer.Deserialize<Client>(fs);
+    }
+
+
+## Tutorial
 
 Here is a straightforward sample :
 
