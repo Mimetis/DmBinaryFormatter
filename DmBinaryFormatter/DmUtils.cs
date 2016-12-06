@@ -15,7 +15,7 @@ using System.Runtime.InteropServices;
 
 namespace DmBinaryFormatter
 {
-    public static class DmUtils
+    internal static class DmUtils
     {
 
         public static List<MemberInfo> GetMembersOrderedByParametersForConstructor(List<MemberInfo> members, ParameterInfo[] parameters)

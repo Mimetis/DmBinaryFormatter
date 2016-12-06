@@ -5,7 +5,7 @@ using System.Text;
 
 namespace DmBinaryFormatter
 {
-    public class DmBinaryReader : BinaryReader
+    internal class DmBinaryReader : BinaryReader
     {
         public DmBinaryReader(Stream ms) : base(ms)
         {

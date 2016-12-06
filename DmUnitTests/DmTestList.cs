@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text;
 
@@ -532,7 +533,29 @@ namespace DmUnitTests
             return true;
         }
 
+        public static bool IsEnumerable(Type type)
+        {
+            if (type.IsArray)
+                return true;
 
+            if (typeof(IEnumerable).IsAssignableFrom(type))
+                return true;
+
+            return false;
+        }
+
+        public static bool IsDictionary(Type type)
+        {
+            if (typeof(IDictionary).IsAssignableFrom(type))
+                return true;
+
+            TypeInfo typeInfo = type.GetTypeInfo();
+
+            if (typeInfo.IsGenericType && type.GetGenericTypeDefinition() == typeof(IDictionary<,>))
+                return true;
+
+            return false;
+        }
         public static bool DictionariesAreEqual(IDictionary array1, IDictionary array2)
         {
             if (array1 == null || array2 == null) return array1 == array2;
@@ -550,7 +573,8 @@ namespace DmUnitTests
                 if (!EqualityComparer<object>.Default.Equals(entryE1.Key, entryE1.Key))
                     return false;
 
-                if (DmUtils.IsEnumerable(entryE1.Value.GetType()))
+
+               if (IsEnumerable(entryE1.Value.GetType()))
                 {
                     if (!ArraysAreEqual((IEnumerable)entryE1.Value, (IEnumerable)entryE2.Value))
                     {

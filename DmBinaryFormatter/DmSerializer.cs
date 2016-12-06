@@ -1,4 +1,5 @@
-﻿using DmBinaryFormatter.Serializers;
+﻿using DmBinaryFormatter.Converters;
+using DmBinaryFormatter.Serializers;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -8,24 +9,48 @@ using System.Text;
 
 namespace DmBinaryFormatter
 {
+
+    /// <summary>
+    /// Serializer. Use it to serialize and deserialize any kind of object
+    /// </summary>
     public class DmSerializer
     {
+        /// <summary>
+        /// Gets or sets the Encoding used to serialize strings
+        /// </summary>
         public Encoding Encoding { get; set; }
-        public DmBinaryReader Reader { get; private set; }
-        public DmBinaryWriter Writer { get; private set; }
+
+        /// <summary>
+        /// Get the reader used to read the stream
+        /// </summary>
+        internal DmBinaryReader Reader { get; private set; }
+
+        /// <summary>
+        /// Get the writer used to write to the stream
+        /// </summary>
+        internal DmBinaryWriter Writer { get; private set; }
+
+        /// <summary>
+        /// A textwriter used to debug when trying to deserialize (try Console.Out)
+        /// </summary>
         public TextWriter DebugWriter { get; set; }
+
 
         private enum DmState : byte
         {
             IsNull = 0,
-            IsObject = 1,
+            IsAloneOrValue = 1,
             IsReference = 2
         }
 
-        internal int index = 0;
+        /// used to managed references
+        private int index = 0;
         private Dictionary<Object, int> fromObjects = new Dictionary<Object, int>();
         private Dictionary<int, Object> fromIndexes = new Dictionary<int, object>();
 
+        /// <summary>
+        /// get the state of an object, and get the new id (or the ref id)
+        /// </summary>
         private DmState GetState(Object obj, Type objType, ref int id)
         {
             if (obj == null)
@@ -39,7 +64,7 @@ namespace DmBinaryFormatter
             {
                 this.index++;
                 id = this.index;
-                return DmState.IsObject;
+                return DmState.IsAloneOrValue;
             }
 
             var ptrObj = fromObjects.ContainsKey(obj);
@@ -53,20 +78,38 @@ namespace DmBinaryFormatter
             this.index++;
             fromObjects.Add(obj, this.index);
             id = this.index;
-            return DmState.IsObject;
+            return DmState.IsAloneOrValue;
 
         }
+
+        /// <summary>
+        /// Constrcutor. use Encoding.UTF8 by default
+        /// </summary>
         public DmSerializer()
         {
             this.Encoding = Encoding.UTF8;
         }
 
+        /// <summary>
+        /// Constructuror, you have to define the Encoding used to serialize strings
+        /// </summary>
+        /// <param name="encoding"></param>
         public DmSerializer(Encoding encoding)
         {
             this.Encoding = encoding;
         }
 
+        /// <summary>
+        /// Register a converter
+        /// </summary>
+        public void RegisterConverter(Type type, ObjectConverter converter)
+        {
+            ObjectConverter.AddConverter(type, converter);
+        }
 
+        /// <summary>
+        /// Serialize a T object in an open writable stream
+        /// </summary>
         public void Serialize<T>(T obj, Stream s)
         {
             if (obj == null)
@@ -88,6 +131,9 @@ namespace DmBinaryFormatter
             this.Serialize(obj, objectType);
         }
 
+        /// <summary>
+        /// Serialize a T object using an internal memorystream and returning a Byte array
+        /// </summary>
         public byte[] Serialize<T>(T obj)
         {
             if (obj == null)
@@ -101,7 +147,9 @@ namespace DmBinaryFormatter
             }
         }
 
-
+        /// <summary>
+        /// Recursive method, serializing every object in my objects graph
+        /// </summary>
         internal void Serialize(object obj, Type objType)
         {
 
@@ -130,11 +178,13 @@ namespace DmBinaryFormatter
             this.Writer.Write(refIndex);
 
             // if not null or ref
-            if (state == DmState.IsObject)
+            if (state == DmState.IsAloneOrValue)
                 serializer.Serialize(this, obj, objType);
         }
 
-
+        /// <summary>
+        /// Deserialize a byte array using an internal MemoryStream
+        /// </summary>
         public Object Deserialize(Byte[] bytes)
         {
             using (MemoryStream s = new MemoryStream(bytes))
@@ -143,6 +193,9 @@ namespace DmBinaryFormatter
             }
         }
 
+        /// <summary>
+        /// Deserialize a stream containing a binary instance
+        /// </summary>
         public object Deserialize(Stream s)
         {
             if (!s.CanRead || !s.CanWrite)
@@ -160,16 +213,25 @@ namespace DmBinaryFormatter
             return obj;
         }
 
+        /// <summary>
+        /// Deserialize a stream containing a binary instance of T
+        /// </summary>
         public T Deserialize<T>(Stream s)
         {
             return (T)Deserialize(s);
         }
 
+        /// <summary>
+        /// Deserialize a byte array using an internal MemoryStream and returning an instance of T
+        /// </summary>
         public T Deserialize<T>(Byte[] bytes)
         {
             return (T)Deserialize(bytes);
         }
 
+        /// <summary>
+        /// Recursive deserialise method to get every object from my stream
+        /// </summary>
         internal Object GetObject(bool isDebugMode = false)
         {
             Object deserializedObject = null;
@@ -234,8 +296,6 @@ namespace DmBinaryFormatter
             return deserializedObject;
 
         }
-
-
 
     }
 }

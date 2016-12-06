@@ -15,9 +15,9 @@ namespace DmBinaryFormatter.Serializers
             // Get the serialized members
             var members = DmUtils.GetMembers(objType);
 
-            var ctorParameters = objType.GetConstructorParameters(true);
-            if (ctorParameters != null)
-                members = DmUtils.GetMembersOrderedByParametersForConstructor(members, ctorParameters);
+            //var ctorParameters = objType.GetConstructorParameters(true);
+            //if (ctorParameters != null)
+            //    members = DmUtils.GetMembersOrderedByParametersForConstructor(members, ctorParameters);
 
             foreach (MemberInfo member in members)
             {

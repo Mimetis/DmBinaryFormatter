@@ -6,7 +6,7 @@ using System.Text;
 
 namespace DmBinaryFormatter
 {
-    public class DmBinaryWriter : BinaryWriter
+    internal class DmBinaryWriter : BinaryWriter
     {
         public DmBinaryWriter(Stream ms, Encoding encoding = null) : base(ms, encoding)
         {

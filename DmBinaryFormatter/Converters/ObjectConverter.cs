@@ -7,19 +7,36 @@ namespace DmBinaryFormatter.Converters
 {
     public abstract class ObjectConverter
     {
+
+        private static Dictionary<Type, ObjectConverter> converters = new Dictionary<Type, ObjectConverter>();
+
+        static ObjectConverter()
+        {
+            converters.Add(typeof(Type), new ObjectTypeConverter());
+            converters.Add((typeof(Type).GetType()), new ObjectTypeConverter());
+            converters.Add(typeof(CultureInfo), new CultureInfoConverter());
+            converters.Add(typeof(Version), new VersionConverter());
+
+        }
+        /// <summary>
+        /// Adding a converter
+        /// </summary>
+        public static void AddConverter(Type type, ObjectConverter converter)
+        {
+            if (ObjectConverter.converters.ContainsKey(type))
+                throw new ArgumentException($"Converter {type.Name} already exists.");
+
+            ObjectConverter.converters.Add(type, converter);
+        }
+
+        /// <summary>
+        /// Getting an existing converter
+        /// </summary>
         public static ObjectConverter GetConverter(Type objType)
         {
-            if (objType == typeof(Type))
-                return new ObjectTypeConverter();
 
-            if (objType == (typeof(Type).GetType()))
-                return new ObjectTypeConverter();
-
-            if (objType == typeof(CultureInfo))
-                return new CultureInfoConverter();
-
-            if (objType == typeof(Version))
-                return new VersionConverter();
+            if (ObjectConverter.converters.ContainsKey(objType))
+                return ObjectConverter.converters[objType];
 
             return null ;
         }
